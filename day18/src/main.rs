@@ -21,30 +21,27 @@ impl FromStr for Cube {
     }
 }
 
-impl Cube {
-    // Manhattan distance to determine if we're close
-    pub fn is_adjacent(&self, other: &Self) -> bool {
-        let dx = (self.x - other.x).abs();
-        let dy = (self.y - other.y).abs();
-        let dz = (self.z - other.z).abs();
-
-        dx == 1 && dy == 0 && dz == 0
-            || dx == 0 && dy == 1 && dz == 0
-            || dx == 0 && dy == 0 && dz == 1
-    }
-}
-
 fn part1(input: &str) -> Result<usize> {
-    let cubes: Vec<Cube> = input
+    let cubes: HashSet<Cube> = input
         .lines()
         .map(|l| l.parse())
-        .collect::<Result<Vec<Cube>>>()?;
+        .collect::<Result<HashSet<Cube>>>()?;
+
+    let coords = [
+        (1,0,0),
+        (0,1,0),
+        (0,0,1),
+        (-1,0,0),
+        (0,-1,0),
+        (0,0,-1),
+    ];
 
     let mut total_free_sides = 0;
     for cube in cubes.iter() {
         let mut free_sides = 6;
-        for cube2 in cubes.iter().filter(|&c| c != cube) {
-            if cube.is_adjacent(&cube2) {
+        for coord in coords.iter() {
+            let c = Cube { x: cube.x + coord.0, y: cube.y + coord.1, z: cube.z + coord.2 };
+            if cubes.contains(&c) {
                 free_sides -= 1;
             }
         }
@@ -55,16 +52,19 @@ fn part1(input: &str) -> Result<usize> {
 }
 
 fn part2(input: &str) -> Result<usize> {
-    let cubes: Vec<Cube> = input
+    let cubes: HashSet<Cube> = input
         .lines()
         .map(|l| l.parse())
-        .collect::<Result<Vec<Cube>>>()?;
+        .collect::<Result<HashSet<Cube>>>()?;
 
-
-    let mut cur_cubes = HashSet::new();
-    for c in cubes.iter() {
-        cur_cubes.insert(c);
-    }
+    let coords = [
+        (1,0,0),
+        (0,1,0),
+        (0,0,1),
+        (-1,0,0),
+        (0,-1,0),
+        (0,0,-1),
+    ];
 
     let mut max_x = 0;
     let mut max_y = 0;
@@ -93,19 +93,11 @@ fn part2(input: &str) -> Result<usize> {
 
     let mut queue = vec![Cube { x: min_x-1, y: min_x-1, z: min_x-1 }];
     while let Some(cube) = queue.pop() {
-        let coords = [
-            (1,0,0),
-            (0,1,0),
-            (0,0,1),
-            (-1,0,0),
-            (0,-1,0),
-            (0,0,-1),
-        ];
         for coord in coords.iter() {
             let c = Cube { x: cube.x + coord.0, y: cube.y + coord.1, z: cube.z + coord.2 };
             if c == cube { continue; }
             if bounding_cube.contains(&c) {
-                if !cur_cubes.contains(&c) {
+                if !cubes.contains(&c) {
                     bounding_cube.remove(&c);
                     queue.push(c);
                 }
@@ -116,8 +108,9 @@ fn part2(input: &str) -> Result<usize> {
     let mut total_free_sides = 0;
     for cube in bounding_cube.iter() {
         let mut free_sides = 6;
-        for cube2 in bounding_cube.iter().filter(|&c| c != cube) {
-            if cube.is_adjacent(&cube2) {
+        for coord in coords.iter() {
+            let c = Cube { x: cube.x + coord.0, y: cube.y + coord.1, z: cube.z + coord.2 };
+            if bounding_cube.contains(&c) {
                 free_sides -= 1;
             }
         }
