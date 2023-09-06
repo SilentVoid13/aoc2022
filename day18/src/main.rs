@@ -91,7 +91,7 @@ fn part2(input: &str) -> Result<usize> {
         }
     }
 
-    let mut queue = vec![Cube { x: 0, y: 0, z: 0 }];
+    let mut queue = vec![Cube { x: min_x-1, y: min_x-1, z: min_x-1 }];
     while let Some(cube) = queue.pop() {
         let coords = [
             (1,0,0),

@@ -334,7 +334,7 @@ fn main() -> Result<()> {
     let instant = Instant::now();
     let highest_y = part2(input)?;
     let time = Instant::now() - instant;
-    println!("[*] part 1: {} ({:?})", highest_y, time);
+    println!("[*] part 2: {} ({:?})", highest_y, time);
 
     Ok(())
 }
